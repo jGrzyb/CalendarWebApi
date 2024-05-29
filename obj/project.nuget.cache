@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2YG+4j7RpUQ=",
+  "dgSpecHash": "Wj4pv+dUCjc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\projekt\\projekt.csproj",
+  "projectFilePath": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\CalendarWebApi\\projekt.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Mateusz\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\Mateusz\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",

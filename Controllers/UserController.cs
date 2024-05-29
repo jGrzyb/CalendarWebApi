@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace projekt.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly DataBaseContext _context;

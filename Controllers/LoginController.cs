@@ -4,9 +4,7 @@ using System.Text;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
-using SQLitePCL;
 
 namespace projekt.Controllers {
     [Route("login")]
@@ -19,6 +17,7 @@ namespace projekt.Controllers {
             _configuration = configuration;
         }
 
+        [HttpGet]
         public IActionResult Login() {
             return View();
         }
@@ -42,7 +41,7 @@ namespace projekt.Controllers {
                 Subject = new ClaimsIdentity([
                     new Claim(ClaimTypes.Name, username)
                 ]),
-                Expires = DateTime.UtcNow.AddMinutes(0.1),
+                Expires = DateTime.UtcNow.AddMinutes(0.5),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"]

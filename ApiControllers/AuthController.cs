@@ -39,7 +39,7 @@ namespace projekt.ApiControllers {
                 Subject = new ClaimsIdentity([
                     new Claim(ClaimTypes.Name, username)
                 ]),
-                Expires = DateTime.UtcNow.AddMinutes(0.1),
+                Expires = DateTime.UtcNow.AddMinutes(0.5),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"]

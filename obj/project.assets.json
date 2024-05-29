@@ -11417,11 +11417,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\projekt\\projekt.csproj",
+      "projectUniqueName": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\CalendarWebApi\\projekt.csproj",
       "projectName": "projekt",
-      "projectPath": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\projekt\\projekt.csproj",
+      "projectPath": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\CalendarWebApi\\projekt.csproj",
       "packagesPath": "C:\\Users\\Mateusz\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\projekt\\obj\\",
+      "outputPath": "C:\\Users\\Mateusz\\Documents\\studia\\pz2\\CalendarWebApi\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Mateusz\\AppData\\Roaming\\NuGet\\NuGet.Config",

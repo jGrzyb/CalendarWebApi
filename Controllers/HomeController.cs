@@ -1,10 +1,11 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using projekt.Models;
 
 namespace projekt.Controllers;
-
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -21,9 +22,8 @@ public class HomeController : Controller
             ViewData["currentDate"] = DateTime.UtcNow;
             return View();
         }
-        return RedirectToAction("Login", "Login");
-        
-        
+        // return RedirectToAction("Login", "Login");
+        return View();
     }
 
     public IActionResult Privacy()

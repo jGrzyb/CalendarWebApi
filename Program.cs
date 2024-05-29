@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,22 +48,40 @@ builder.Services.AddAuthentication(x =>
             return Task.CompletedTask;
         }
     };
+    // x.Events = new JwtBearerEvents {
+    //     OnMessageReceived = context => {
+    //         if (context.Request.Cookies.ContainsKey("jwt")) {
+    //                 context.Token = context.Request.Cookies["jwt"];
+    //         }
+    //         return Task.CompletedTask;
+    //     },
+    //     OnAuthenticationFailed = context => {
+    //         Console.WriteLine("Authentication failed");
+    //         context.Response.Redirect("/login");
+    //         return Task.CompletedTask;
+    //     },
+    //     OnChallenge = context => {
+    //         if(!context.Response.HasStarted) {
+    //             context.Response.Redirect("/login");
+    //         }
+    //         return Task.CompletedTask;
+    //     }
+    // };
 });
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
     
 }
-
-app.UseSwagger();
-app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
