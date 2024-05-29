@@ -22,8 +22,8 @@ namespace projekt.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.User != null ? 
-                          View(await _context.User.ToListAsync()) :
-                          Problem("Entity set 'DataBaseContext.User'  is null.");
+                        View(await _context.User.ToListAsync()) :
+                        Problem("Entity set 'DataBaseContext.User'  is null.");
         }
 
         // GET: User/Details/5
@@ -156,7 +156,7 @@ namespace projekt.Controllers
 
         private bool UserExists(int id)
         {
-          return (_context.User?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.User?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

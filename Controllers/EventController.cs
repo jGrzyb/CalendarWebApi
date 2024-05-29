@@ -21,9 +21,9 @@ namespace projekt.Controllers
         // GET: Event
         public async Task<IActionResult> Index()
         {
-              return _context.Event != null ? 
-                          View(await _context.Event.ToListAsync()) :
-                          Problem("Entity set 'DataBaseContext.Event'  is null.");
+            return _context.Event != null ? 
+                        View(await _context.Event.ToListAsync()) :
+                        Problem("Entity set 'DataBaseContext.Event'  is null.");
         }
 
         // GET: Event/Details/5
@@ -156,7 +156,7 @@ namespace projekt.Controllers
 
         private bool EventExists(int id)
         {
-          return (_context.Event?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Event?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

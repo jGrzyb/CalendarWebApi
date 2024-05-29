@@ -34,7 +34,7 @@ namespace projekt.ApiControllers
         // GET: api/Event/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Event>> GetEvent(int id)
-        {
+        { 
           if (_context.Event == null)
           {
               return NotFound();

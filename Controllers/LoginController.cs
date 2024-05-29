@@ -19,6 +19,7 @@ namespace projekt.Controllers {
             _configuration = configuration;
         }
 
+        [HttpGet]
         public IActionResult Login() {
             return View();
         }

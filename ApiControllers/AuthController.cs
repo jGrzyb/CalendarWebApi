@@ -18,7 +18,7 @@ namespace projekt.ApiControllers {
             _configuration = configuration;
             _context = context;
         }
-
+        //nie wiem czy to działa
         [HttpPost]
         public async Task<ActionResult<IEnumerable<string>>> Login(User user) {
             var us = await _context.User.FirstOrDefaultAsync(u => u.Email == user.Email && u.Password == user.Password);
