@@ -11,8 +11,8 @@ using projekt.Data;
 namespace projekt.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20240528125026_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240530131330_UpdateTableNames")]
+    partial class UpdateTableNames
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace projekt.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.1");
 
-            modelBuilder.Entity("Event", b =>
+            modelBuilder.Entity("projekt.Models.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,10 +42,10 @@ namespace projekt.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Event");
+                    b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("User", b =>
+            modelBuilder.Entity("projekt.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +61,7 @@ namespace projekt.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

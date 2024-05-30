@@ -1,11 +1,10 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using projekt.Models;
 
 namespace projekt.Controllers;
-[Authorize]
+
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -15,17 +14,23 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index() {
-        var jwt = getTokenIfValid();
-        if(jwt != null) {
-            ViewData["validTo"] = jwt.ValidTo;
-            ViewData["currentDate"] = DateTime.UtcNow;
+    [HttpGet, ActionName("Index")]
+    public IActionResult Index()
+    {
+        var jwt = GetTokenIfValid();
+        if (jwt == null)
+        {
             return View();
         }
-        // return RedirectToAction("Login", "Login");
+
+        ViewData["validTo"] = jwt.ValidTo;
+        ViewData["currentDate"] = DateTime.UtcNow;
         return View();
+
+        // return RedirectToAction("Login", "Login");
     }
 
+    [HttpGet, ActionName("Privacy")]
     public IActionResult Privacy()
     {
         return View();
@@ -37,14 +42,19 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private JwtSecurityToken? getTokenIfValid() {
+    private JwtSecurityToken? GetTokenIfValid()
+    {
         var handler = Request.Cookies["jwt"];
-        if(!string.IsNullOrEmpty(handler)) {
-            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(handler);
-            if(jwt.ValidTo > DateTime.UtcNow) {
-                return jwt;
-            }
+
+        if (string.IsNullOrEmpty(handler))
+        {
+            return null;
         }
-        return null;
+
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(handler);
+
+        return jwt.ValidTo > DateTime.UtcNow
+            ? jwt
+            : null;
     }
 }
