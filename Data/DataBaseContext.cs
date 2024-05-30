@@ -1,20 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using projekt.Models;
 
-namespace Data
+namespace projekt.Data;
+
+public class DataBaseContext : DbContext
 {
-    public class DataBaseContext : DbContext
+    public DataBaseContext (DbContextOptions<DataBaseContext> options)
+        : base(options)
     {
-        public DataBaseContext (DbContextOptions<DataBaseContext> options)
-            : base(options)
-        {
-        }
-
-        public DbSet<User> User { get; set; } = default!;
-
-        public DbSet<Event> Event { get; set; } = default!;
     }
+
+    public DbSet<User> Users { get; set; } = default!;
+
+    public DbSet<Event> Events { get; set; } = default!;
 }
