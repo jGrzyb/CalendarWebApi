@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,20 +16,25 @@ public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly DataBaseContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly SignInManager<IdentityUser> _signInManager;
 
-    public AuthController(IConfiguration configuration, DataBaseContext context)
+
+    public AuthController(IConfiguration configuration, DataBaseContext context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
     {
         _configuration = configuration;
         _context = context;
+        _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     [HttpPost]
     public async Task<ActionResult<IEnumerable<string>>> Login(User user)
     {
-        var us = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email && u.Password == user.Password);
-        if (us == null)
+        var signInResult = await _signInManager.PasswordSignInAsync(user.Email, user.Password, false, false);
+        if (!signInResult.Succeeded)
         {
-            return BadRequest();
+            return Unauthorized();
         }
         
         var token = GenerateJwtToken(user.Email);

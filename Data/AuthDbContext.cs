@@ -22,14 +22,14 @@ public class AuthDbContext : IdentityDbContext
             new()
             {
                 Name = "Admin",
-                NormalizedName = "Admin",
+                NormalizedName = "ADMIN",
                 Id = adminRoleId,
                 ConcurrencyStamp = adminRoleId
             },
             new()
             {
                 Name = "User",
-                NormalizedName = "User",
+                NormalizedName = "USER",
                 Id = userRoleId,
                 ConcurrencyStamp = userRoleId
             },

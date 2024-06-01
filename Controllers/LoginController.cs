@@ -31,9 +31,9 @@ public class LoginController : Controller
     }
 
     [HttpPost, ActionName("Login")]
-    public async Task<IActionResult> Login(User user)
+    public async Task<IActionResult> Login(string username, string password)
     {
-        var signInResult = await _signInManager.PasswordSignInAsync("admin@gmail.com", "admin", false, false);
+        var signInResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
         if (!signInResult.Succeeded)
         {
@@ -43,10 +43,17 @@ public class LoginController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    [HttpGet, ActionName("Register")]
+    public IActionResult Register()
+    {
+        return View();
+    }
+
 
     [HttpPost, ActionName("Register")]
     public async Task<IActionResult> Register(string username, string email, string password)
     {
+        Console.WriteLine(username + " " + email + " " + password);
         var identityUser = new IdentityUser
         {
             UserName = username,
@@ -55,23 +62,30 @@ public class LoginController : Controller
 
         var registerResult = await _userManager.CreateAsync(identityUser, password);
 
-        if (!registerResult.Succeeded)
-        {
+        if (!registerResult.Succeeded) {
+            ViewData["Error"] = registerResult.Errors.FirstOrDefault()?.Description;
             return View();
         }
 
         var addRoleResult = await _userManager.AddToRoleAsync(identityUser, "User");
 
-        if (addRoleResult.Succeeded)
-        {
+        if (addRoleResult.Succeeded) {
             return RedirectToAction("Login");
         }
 
         //error
+        ViewData["Error"] = registerResult.Errors.FirstOrDefault()?.Description;
         return View();
     }
 
-
+    [HttpGet, ActionName("Logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+    
+    
     private string GenerateJwtToken(string username)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -89,12 +103,5 @@ public class LoginController : Controller
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
-    }
-
-    [HttpGet, ActionName("Logout")]
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
     }
 }
