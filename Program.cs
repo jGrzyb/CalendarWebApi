@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using projekt.Data;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddDbContext<DataBaseContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DataBaseContext")
-                      ?? throw new InvalidOperationException("Connection string 'DataBaseContext' not found.")
-    )
-);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DataBaseContext") ?? throw new InvalidOperationException("Connection string 'DataBaseContext' not found.")));
+
+// builder.Services.AddDbContext<DataBaseContext>(options =>
+//     options.UseSqlite(builder.Configuration.GetConnectionString("DataBaseContext")
+//                       ?? throw new InvalidOperationException("Connection string 'DataBaseContext' not found.")
+//     )
+// );
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("AuthDataBaseContext")
@@ -112,8 +115,8 @@ app.MapControllerRoute(
 );
 
 var scope = app.Services.CreateScope();
-var dbContext = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
-dbContext.Database.EnsureCreated();
+// var dbContext = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
+// dbContext.Database.EnsureCreated();
 var authContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
 authContext.Database.EnsureCreated();
 
