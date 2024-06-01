@@ -1,11 +1,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 
-<p>@ViewData["validTo"]</p>
-<p>@ViewData["currentDate"]</p>
-<p>@ViewData["Error"]</p>
-
-@if(SignInManager.IsSignedIn(User))
+@if (SignInManager.IsSignedIn(User))
 {
     <form asp-controller="Login" asp-action="Logout" method="get">
         <button type="submit" class="btn btn-primary">Logout</button>
@@ -27,6 +23,7 @@ else
             <label for="password">Password</label>
             <input type="text" class="form-control" id="password" name="password" required/>
         </div>
+        <p>@ViewData["Error"]</p>
         <button type="submit" class="btn btn-primary">Register</button>
     </form>
 }

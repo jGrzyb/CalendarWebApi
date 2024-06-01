@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 using projekt.Data;
 using projekt.Models;
 
@@ -40,6 +41,7 @@ public class LoginController : Controller
             return View();
         }
 
+        ViewData["Error"] = "Wrong username or password.";
         return RedirectToAction("Index", "Home");
     }
 
@@ -86,22 +88,22 @@ public class LoginController : Controller
     }
     
     
-    private string GenerateJwtToken(string username)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity([
-                    new Claim(ClaimTypes.Name, username)
-                ]
-            ),
-            Expires = DateTime.UtcNow.AddMinutes(0.5),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-            Issuer = _configuration["Jwt:Issuer"],
-            Audience = _configuration["Jwt:Audience"]
-        };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
+    // private string GenerateJwtToken(string username)
+    // {
+    //     var tokenHandler = new JwtSecurityTokenHandler();
+    //     var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
+    //     var tokenDescriptor = new SecurityTokenDescriptor
+    //     {
+    //         Subject = new ClaimsIdentity([
+    //                 new Claim(ClaimTypes.Name, username)
+    //             ]
+    //         ),
+    //         Expires = DateTime.UtcNow.AddMinutes(0.5),
+    //         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+    //         Issuer = _configuration["Jwt:Issuer"],
+    //         Audience = _configuration["Jwt:Audience"]
+    //     };
+    //     var token = tokenHandler.CreateToken(tokenDescriptor);
+    //     return tokenHandler.WriteToken(token);
+    // }
 }

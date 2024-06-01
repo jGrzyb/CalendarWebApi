@@ -4,14 +4,14 @@ using projekt.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<DataBaseContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DataBaseContext") ?? throw new InvalidOperationException("Connection string 'DataBaseContext' not found.")));
-
 // builder.Services.AddDbContext<DataBaseContext>(options =>
-//     options.UseSqlite(builder.Configuration.GetConnectionString("DataBaseContext")
-//                       ?? throw new InvalidOperationException("Connection string 'DataBaseContext' not found.")
-//     )
-// );
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DataBaseContext") ?? throw new InvalidOperationException("Connection string 'DataBaseContext' not found.")));
+
+builder.Services.AddDbContext<DataBaseContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DataBaseContext")
+                      ?? throw new InvalidOperationException("Connection string 'DataBaseContext' not found.")
+    )
+);
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("AuthDataBaseContext")
@@ -30,6 +30,40 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthorization();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
+
+var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
+dbContext.Database.EnsureCreated();
+var authContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+authContext.Database.EnsureCreated();
+
+app.Run();
+
 
 // var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
 // builder.Services.AddAuthentication(x =>
@@ -88,36 +122,3 @@ builder.Services.AddSwaggerGen();
 //             // };
 //         }
 //     );
-
-builder.Services.AddAuthorization();
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
-);
-
-var scope = app.Services.CreateScope();
-// var dbContext = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
-// dbContext.Database.EnsureCreated();
-var authContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-authContext.Database.EnsureCreated();
-
-app.Run();
