@@ -4,43 +4,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace projekt.Data;
 
-public class AuthDbContext : IdentityDbContext
-{
-    public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
-    {
+public class AuthDbContext : IdentityDbContext {
+    public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) {
     }
 
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
+    protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
 
         var adminRoleId = Guid.NewGuid().ToString();
         var userRoleId = Guid.NewGuid().ToString();
 
-        var roles = new List<IdentityRole>
-        {
-            new()
-            {
+        var roles = new List<IdentityRole> {
+            new() {
                 Name = "Admin",
                 NormalizedName = "ADMIN",
                 Id = adminRoleId,
                 ConcurrencyStamp = adminRoleId
             },
-            new()
-            {
+            new() {
                 Name = "User",
                 NormalizedName = "USER",
                 Id = userRoleId,
                 ConcurrencyStamp = userRoleId
-            },
+            }
         };
 
         builder.Entity<IdentityRole>().HasData(roles);
 
         // create admin
         var adminId = Guid.NewGuid().ToString();
-        var adminUser = new IdentityUser
-        {
+        var adminUser = new IdentityUser {
             UserName = "admin@gmail.com",
             Email = "admin@gmail.com",
             NormalizedEmail = "admin@gmail.com".ToUpper(),
@@ -52,15 +45,12 @@ public class AuthDbContext : IdentityDbContext
 
         builder.Entity<IdentityUser>().HasData(adminUser);
 
-        var adminRoles = new List<IdentityUserRole<string>>
-        {
-            new()
-            {
+        var adminRoles = new List<IdentityUserRole<string>> {
+            new() {
                 RoleId = adminRoleId,
                 UserId = adminId
             },
-            new()
-            {
+            new() {
                 RoleId = userRoleId,
                 UserId = adminId
             }

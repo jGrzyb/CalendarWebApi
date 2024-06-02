@@ -1,50 +1,46 @@
 using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using projekt.Models;
 
 namespace projekt.Controllers;
 
-public class HomeController : Controller
-{
+public class HomeController : Controller {
     private readonly ILogger<HomeController> _logger;
-    private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
-    {
+    public HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager,
+        SignInManager<IdentityUser> signInManager) {
         _logger = logger;
         _userManager = userManager;
         _signInManager = signInManager;
     }
 
-    [HttpGet, ActionName("Index")]
-    public IActionResult Index()
-    {
+    [HttpGet]
+    [ActionName("Index")]
+    public IActionResult Index() {
         ViewData["logged"] = "Not logged in";
-        if (_signInManager.IsSignedIn(User))
-        {
+        if (_signInManager.IsSignedIn(User)) {
             ViewData["logged"] = "Logged in";
             ViewData["id"] = _userManager.GetUserId(User);
             ViewData["name"] = _userManager.GetUserName(User);
         }
-        
-        
+
+
         return View();
 
         // return RedirectToAction("Login", "Login");
     }
 
-    [HttpGet, ActionName("Privacy")]
-    public IActionResult Privacy()
-    {
+    [HttpGet]
+    [ActionName("Privacy")]
+    public IActionResult Privacy() {
         return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
+    public IActionResult Error() {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
