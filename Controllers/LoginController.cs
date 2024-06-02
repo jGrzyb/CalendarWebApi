@@ -30,7 +30,9 @@ public class LoginController : Controller {
     public async Task<IActionResult> Login(string username, string password) {
         var signInResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
-        if (!signInResult.Succeeded) return View();
+        if (!signInResult.Succeeded) {
+            return View();
+        }
 
         ViewData["Error"] = "Wrong username or password.";
         return RedirectToAction("Index", "Home");
@@ -61,7 +63,9 @@ public class LoginController : Controller {
 
         var addRoleResult = await _userManager.AddToRoleAsync(identityUser, "User");
         var cId = 0;
-        if (_context.Ownership.Any()) cId = _context.Ownership.Max(x => x.CalendarId) + 1;
+        if (_context.Ownership.Any()) {
+            cId = _context.Ownership.Max(x => x.CalendarId) + 1;
+        }
 
         await _context.Ownership.AddAsync(new Ownership {
             UserId = Guid.Parse(identityUser.Id),
@@ -69,7 +73,9 @@ public class LoginController : Controller {
         });
         await _context.SaveChangesAsync();
 
-        if (addRoleResult.Succeeded) return RedirectToAction("Login");
+        if (addRoleResult.Succeeded) {
+            return RedirectToAction("Login");
+        }
 
         //error
         ViewData["Error"] = registerResult.Errors.FirstOrDefault()?.Description;

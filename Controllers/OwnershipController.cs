@@ -19,11 +19,15 @@ public class OwnershipController : Controller {
 
     // GET: Ownership/Details/5
     public async Task<IActionResult> Details(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var ownership = await _context.Ownership
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (ownership == null) return NotFound();
+        if (ownership == null) {
+            return NotFound();
+        }
 
         return View(ownership);
     }
@@ -50,10 +54,15 @@ public class OwnershipController : Controller {
 
     // GET: Ownership/Edit/5
     public async Task<IActionResult> Edit(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var ownership = await _context.Ownership.FindAsync(id);
-        if (ownership == null) return NotFound();
+        if (ownership == null) {
+            return NotFound();
+        }
+
         return View(ownership);
     }
 
@@ -63,7 +72,9 @@ public class OwnershipController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CalendarId")] Ownership ownership) {
-        if (id != ownership.Id) return NotFound();
+        if (id != ownership.Id) {
+            return NotFound();
+        }
 
         if (ModelState.IsValid) {
             try {
@@ -71,8 +82,10 @@ public class OwnershipController : Controller {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException) {
-                if (!OwnershipExists(ownership.Id))
+                if (!OwnershipExists(ownership.Id)) {
                     return NotFound();
+                }
+
                 throw;
             }
 
@@ -84,11 +97,15 @@ public class OwnershipController : Controller {
 
     // GET: Ownership/Delete/5
     public async Task<IActionResult> Delete(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var ownership = await _context.Ownership
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (ownership == null) return NotFound();
+        if (ownership == null) {
+            return NotFound();
+        }
 
         return View(ownership);
     }
@@ -99,7 +116,9 @@ public class OwnershipController : Controller {
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id) {
         var ownership = await _context.Ownership.FindAsync(id);
-        if (ownership != null) _context.Ownership.Remove(ownership);
+        if (ownership != null) {
+            _context.Ownership.Remove(ownership);
+        }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));

@@ -25,7 +25,9 @@ public class EventController : ControllerBase {
     public async Task<ActionResult<Event>> GetEvent(int id) {
         var @event = await _context.Event.FindAsync(id);
 
-        if (@event == null) return NotFound();
+        if (@event == null) {
+            return NotFound();
+        }
 
         return @event;
     }
@@ -34,7 +36,9 @@ public class EventController : ControllerBase {
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
     public async Task<IActionResult> PutEvent(int id, Event @event) {
-        if (id != @event.Id) return BadRequest();
+        if (id != @event.Id) {
+            return BadRequest();
+        }
 
         _context.Entry(@event).State = EntityState.Modified;
 
@@ -42,8 +46,10 @@ public class EventController : ControllerBase {
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException) {
-            if (!EventExists(id))
+            if (!EventExists(id)) {
                 return NotFound();
+            }
+
             throw;
         }
 
@@ -64,7 +70,9 @@ public class EventController : ControllerBase {
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEvent(int id) {
         var @event = await _context.Event.FindAsync(id);
-        if (@event == null) return NotFound();
+        if (@event == null) {
+            return NotFound();
+        }
 
         _context.Event.Remove(@event);
         await _context.SaveChangesAsync();

@@ -19,11 +19,15 @@ public class CalendarController : Controller {
 
     // GET: Calendar/Details/5
     public async Task<IActionResult> Details(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var calendar = await _context.Calendar
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (calendar == null) return NotFound();
+        if (calendar == null) {
+            return NotFound();
+        }
 
         return View(calendar);
     }
@@ -50,10 +54,15 @@ public class CalendarController : Controller {
 
     // GET: Calendar/Edit/5
     public async Task<IActionResult> Edit(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var calendar = await _context.Calendar.FindAsync(id);
-        if (calendar == null) return NotFound();
+        if (calendar == null) {
+            return NotFound();
+        }
+
         return View(calendar);
     }
 
@@ -63,7 +72,9 @@ public class CalendarController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerId,Name")] Calendar calendar) {
-        if (id != calendar.Id) return NotFound();
+        if (id != calendar.Id) {
+            return NotFound();
+        }
 
         if (ModelState.IsValid) {
             try {
@@ -71,8 +82,10 @@ public class CalendarController : Controller {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException) {
-                if (!CalendarExists(calendar.Id))
+                if (!CalendarExists(calendar.Id)) {
                     return NotFound();
+                }
+
                 throw;
             }
 
@@ -84,11 +97,15 @@ public class CalendarController : Controller {
 
     // GET: Calendar/Delete/5
     public async Task<IActionResult> Delete(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var calendar = await _context.Calendar
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (calendar == null) return NotFound();
+        if (calendar == null) {
+            return NotFound();
+        }
 
         return View(calendar);
     }
@@ -99,7 +116,9 @@ public class CalendarController : Controller {
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id) {
         var calendar = await _context.Calendar.FindAsync(id);
-        if (calendar != null) _context.Calendar.Remove(calendar);
+        if (calendar != null) {
+            _context.Calendar.Remove(calendar);
+        }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));

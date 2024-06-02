@@ -27,7 +27,6 @@ public partial class DataBaseContext : DbContext {
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
 
-
 // using System;
 // using System.Collections.Generic;
 // using System.Linq;

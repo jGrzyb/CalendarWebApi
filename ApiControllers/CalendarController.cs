@@ -25,7 +25,9 @@ public class CalendarController : ControllerBase {
     public async Task<ActionResult<Calendar>> GetCalendar(int id) {
         var calendar = await _context.Calendar.FindAsync(id);
 
-        if (calendar == null) return NotFound();
+        if (calendar == null) {
+            return NotFound();
+        }
 
         return calendar;
     }
@@ -34,7 +36,9 @@ public class CalendarController : ControllerBase {
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
     public async Task<IActionResult> PutCalendar(int id, Calendar calendar) {
-        if (id != calendar.Id) return BadRequest();
+        if (id != calendar.Id) {
+            return BadRequest();
+        }
 
         _context.Entry(calendar).State = EntityState.Modified;
 
@@ -42,8 +46,10 @@ public class CalendarController : ControllerBase {
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException) {
-            if (!CalendarExists(id))
+            if (!CalendarExists(id)) {
                 return NotFound();
+            }
+
             throw;
         }
 
@@ -64,7 +70,9 @@ public class CalendarController : ControllerBase {
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCalendar(int id) {
         var calendar = await _context.Calendar.FindAsync(id);
-        if (calendar == null) return NotFound();
+        if (calendar == null) {
+            return NotFound();
+        }
 
         _context.Calendar.Remove(calendar);
         await _context.SaveChangesAsync();

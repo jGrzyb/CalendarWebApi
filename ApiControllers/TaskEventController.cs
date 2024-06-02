@@ -25,7 +25,9 @@ public class TaskEventController : ControllerBase {
     public async Task<ActionResult<TaskEvent>> GetTaskEvent(int id) {
         var taskEvent = await _context.TaskEvent.FindAsync(id);
 
-        if (taskEvent == null) return NotFound();
+        if (taskEvent == null) {
+            return NotFound();
+        }
 
         return taskEvent;
     }
@@ -34,7 +36,9 @@ public class TaskEventController : ControllerBase {
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
     public async Task<IActionResult> PutTaskEvent(int id, TaskEvent taskEvent) {
-        if (id != taskEvent.Id) return BadRequest();
+        if (id != taskEvent.Id) {
+            return BadRequest();
+        }
 
         _context.Entry(taskEvent).State = EntityState.Modified;
 
@@ -42,8 +46,10 @@ public class TaskEventController : ControllerBase {
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException) {
-            if (!TaskEventExists(id))
+            if (!TaskEventExists(id)) {
                 return NotFound();
+            }
+
             throw;
         }
 
@@ -64,7 +70,9 @@ public class TaskEventController : ControllerBase {
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTaskEvent(int id) {
         var taskEvent = await _context.TaskEvent.FindAsync(id);
-        if (taskEvent == null) return NotFound();
+        if (taskEvent == null) {
+            return NotFound();
+        }
 
         _context.TaskEvent.Remove(taskEvent);
         await _context.SaveChangesAsync();

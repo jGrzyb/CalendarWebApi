@@ -19,11 +19,15 @@ public class TaskEventController : Controller {
 
     // GET: TaskEvent/Details/5
     public async Task<IActionResult> Details(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var taskEvent = await _context.TaskEvent
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (taskEvent == null) return NotFound();
+        if (taskEvent == null) {
+            return NotFound();
+        }
 
         return View(taskEvent);
     }
@@ -50,10 +54,15 @@ public class TaskEventController : Controller {
 
     // GET: TaskEvent/Edit/5
     public async Task<IActionResult> Edit(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var taskEvent = await _context.TaskEvent.FindAsync(id);
-        if (taskEvent == null) return NotFound();
+        if (taskEvent == null) {
+            return NotFound();
+        }
+
         return View(taskEvent);
     }
 
@@ -63,7 +72,9 @@ public class TaskEventController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind("Id,CalendarId,Date,Name,Description")] TaskEvent taskEvent) {
-        if (id != taskEvent.Id) return NotFound();
+        if (id != taskEvent.Id) {
+            return NotFound();
+        }
 
         if (ModelState.IsValid) {
             try {
@@ -71,8 +82,10 @@ public class TaskEventController : Controller {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException) {
-                if (!TaskEventExists(taskEvent.Id))
+                if (!TaskEventExists(taskEvent.Id)) {
                     return NotFound();
+                }
+
                 throw;
             }
 
@@ -84,11 +97,15 @@ public class TaskEventController : Controller {
 
     // GET: TaskEvent/Delete/5
     public async Task<IActionResult> Delete(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var taskEvent = await _context.TaskEvent
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (taskEvent == null) return NotFound();
+        if (taskEvent == null) {
+            return NotFound();
+        }
 
         return View(taskEvent);
     }
@@ -99,7 +116,9 @@ public class TaskEventController : Controller {
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id) {
         var taskEvent = await _context.TaskEvent.FindAsync(id);
-        if (taskEvent != null) _context.TaskEvent.Remove(taskEvent);
+        if (taskEvent != null) {
+            _context.TaskEvent.Remove(taskEvent);
+        }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));

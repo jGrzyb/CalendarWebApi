@@ -25,7 +25,9 @@ public class EventController : Controller {
         var user = await _userManager.GetUserAsync(User);
         if (user != null) {
             var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("Admin")) return View(await _context.Event.ToListAsync());
+            if (roles.Contains("Admin")) {
+                return View(await _context.Event.ToListAsync());
+            }
         }
 
         // else if not admin
@@ -43,11 +45,15 @@ public class EventController : Controller {
 
     // GET: Event/Details/5
     public async Task<IActionResult> Details(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var @event = await _context.Event
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (@event == null) return NotFound();
+        if (@event == null) {
+            return NotFound();
+        }
 
         return View(@event);
     }
@@ -66,10 +72,12 @@ public class EventController : Controller {
         var row = await _context.Ownership
             .Where(x => x.UserId.ToString().ToLower() == _userManager.GetUserId(User))
             .FirstOrDefaultAsync();
-        if (row != null)
+        if (row != null) {
             @event.CalendarId = row.CalendarId;
-        else
+        }
+        else {
             @event.CalendarId = 0;
+        }
 
         if (ModelState.IsValid) {
             _context.Add(@event);
@@ -82,10 +90,15 @@ public class EventController : Controller {
 
     // GET: Event/Edit/5
     public async Task<IActionResult> Edit(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var @event = await _context.Event.FindAsync(id);
-        if (@event == null) return NotFound();
+        if (@event == null) {
+            return NotFound();
+        }
+
         return View(@event);
     }
 
@@ -95,7 +108,9 @@ public class EventController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind("Id,CalendarId,Name,Description,Date")] Event @event) {
-        if (id != @event.Id) return NotFound();
+        if (id != @event.Id) {
+            return NotFound();
+        }
 
         if (ModelState.IsValid) {
             try {
@@ -103,8 +118,10 @@ public class EventController : Controller {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException) {
-                if (!EventExists(@event.Id))
+                if (!EventExists(@event.Id)) {
                     return NotFound();
+                }
+
                 throw;
             }
 
@@ -116,11 +133,15 @@ public class EventController : Controller {
 
     // GET: Event/Delete/5
     public async Task<IActionResult> Delete(int? id) {
-        if (id == null) return NotFound();
+        if (id == null) {
+            return NotFound();
+        }
 
         var @event = await _context.Event
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (@event == null) return NotFound();
+        if (@event == null) {
+            return NotFound();
+        }
 
         return View(@event);
     }
@@ -131,7 +152,9 @@ public class EventController : Controller {
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id) {
         var @event = await _context.Event.FindAsync(id);
-        if (@event != null) _context.Event.Remove(@event);
+        if (@event != null) {
+            _context.Event.Remove(@event);
+        }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));

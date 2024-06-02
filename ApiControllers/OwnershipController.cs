@@ -25,7 +25,9 @@ public class OwnershipController : ControllerBase {
     public async Task<ActionResult<Ownership>> GetOwnership(int id) {
         var ownership = await _context.Ownership.FindAsync(id);
 
-        if (ownership == null) return NotFound();
+        if (ownership == null) {
+            return NotFound();
+        }
 
         return ownership;
     }
@@ -34,7 +36,9 @@ public class OwnershipController : ControllerBase {
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
     public async Task<IActionResult> PutOwnership(int id, Ownership ownership) {
-        if (id != ownership.Id) return BadRequest();
+        if (id != ownership.Id) {
+            return BadRequest();
+        }
 
         _context.Entry(ownership).State = EntityState.Modified;
 
@@ -42,8 +46,10 @@ public class OwnershipController : ControllerBase {
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException) {
-            if (!OwnershipExists(id))
+            if (!OwnershipExists(id)) {
                 return NotFound();
+            }
+
             throw;
         }
 
@@ -64,7 +70,9 @@ public class OwnershipController : ControllerBase {
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOwnership(int id) {
         var ownership = await _context.Ownership.FindAsync(id);
-        if (ownership == null) return NotFound();
+        if (ownership == null) {
+            return NotFound();
+        }
 
         _context.Ownership.Remove(ownership);
         await _context.SaveChangesAsync();
