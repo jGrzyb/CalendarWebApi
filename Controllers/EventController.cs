@@ -85,6 +85,10 @@ namespace projekt.Controllers
             {
                 @event.CalendarId = row.CalendarId;
             }
+            else
+            {
+                @event.CalendarId = 0;
+            }
             
             if (ModelState.IsValid)
             {
