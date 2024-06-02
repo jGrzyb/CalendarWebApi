@@ -1,0 +1,34 @@
+﻿@model Ownership
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Send Calendar</h1>
+<p>@ViewData["Error"]</p>
+<hr/>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SendCalendar">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="UserId"/>
+            <div class="form-group">
+                <label asp-for="CalendarId" class="control-label">Calendar</label>
+                <select asp-for="CalendarId" asp-items="ViewBag.Calendars" class="form-control"></select>
+                <span asp-validation-for="CalendarId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsOwner" class="control-label">Can Edit</label>
+                <select asp-for="IsOwner" asp-items="ViewBag.OwnerTypes" class="form-control"></select>
+                <span asp-validation-for="IsOwner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Send" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

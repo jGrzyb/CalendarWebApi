@@ -1,9 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace projekt.Models;
+﻿namespace projekt.Models;
 
 public class Calendar {
-    [Key] public int Id { get; set; }
-    public Guid OwnerId { get; set; }
-    public string Name { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; } = default!;
+    public string Description { get; set; } = default!;
+    public bool IsPublic { get; set; }
 }

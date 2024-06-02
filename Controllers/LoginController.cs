@@ -62,18 +62,23 @@ public class LoginController : Controller {
         }
 
         var addRoleResult = await _userManager.AddToRoleAsync(identityUser, "User");
-        var cId = 0;
-        if (_context.Ownership.Any()) {
-            cId = _context.Ownership.Max(x => x.CalendarId) + 1;
-        }
-
-        await _context.Ownership.AddAsync(new Ownership {
-            UserId = Guid.Parse(identityUser.Id),
-            CalendarId = cId
-        });
-        await _context.SaveChangesAsync();
 
         if (addRoleResult.Succeeded) {
+            var calendar = new Calendar {
+                Name = "Default",
+                Description = "Default calendar for user",
+                IsPublic = false
+            };
+            _context.Calendar.Add(calendar);
+            await _context.SaveChangesAsync();
+            
+            await _context.Ownership.AddAsync(new Ownership {
+                UserId = Guid.Parse(identityUser.Id),
+                CalendarId = calendar.Id,
+                IsOwner = true
+            });
+            await _context.SaveChangesAsync();
+            
             return RedirectToAction("Login");
         }
 

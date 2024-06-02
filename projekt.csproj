@@ -35,6 +35,16 @@
         <_ContentIncludedByDefault Remove="Views\Event\Details.cshtml"/>
         <_ContentIncludedByDefault Remove="Views\Event\Edit.cshtml"/>
         <_ContentIncludedByDefault Remove="Views\Event\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Calendar\Create.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Calendar\Delete.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Calendar\Details.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Calendar\Edit.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Calendar\Index.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Ownership\Create.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Ownership\Delete.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Ownership\Details.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Ownership\Edit.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Ownership\Index.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

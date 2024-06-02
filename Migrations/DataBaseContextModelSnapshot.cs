@@ -23,11 +23,15 @@ namespace projekt.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("OwnerId")
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -67,6 +71,9 @@ namespace projekt.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CalendarId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsOwner")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("UserId")
