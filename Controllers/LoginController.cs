@@ -70,8 +70,20 @@ public class LoginController : Controller
         }
 
         var addRoleResult = await _userManager.AddToRoleAsync(identityUser, "User");
+        int cId = 0;
+        if (_context.Ownership.Any())
+        {
+            cId = _context.Ownership.Max(x => x.CalendarId) + 1;
+        }
+        await _context.Ownership.AddAsync(new Ownership
+        {
+            UserId = Guid.Parse(identityUser.Id), 
+            CalendarId = cId
+        });
+        await _context.SaveChangesAsync();
 
-        if (addRoleResult.Succeeded) {
+        if (addRoleResult.Succeeded)
+        {
             return RedirectToAction("Login");
         }
 

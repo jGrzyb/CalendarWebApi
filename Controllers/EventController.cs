@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using projekt.Data;
 using projekt.Models;
@@ -15,16 +11,40 @@ namespace projekt.Controllers
     public class EventController : Controller
     {
         private readonly DataBaseContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public EventController(DataBaseContext context)
+        public EventController(DataBaseContext context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: Event
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Event.ToListAsync());
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if(roles.Contains("Admin"))
+                {
+                    return View(await _context.Event.ToListAsync());
+                }
+            }
+            
+            // else if not admin
+            var str = _userManager.GetUserId(User);
+            Console.WriteLine(str);
+            var events = await _context.Ownership
+                .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
+                .Join(_context.Event,
+                    o => o.CalendarId,
+                    e => e.CalendarId,
+                    (o, e) => e)
+                .ToListAsync();
+            return View(events);
         }
 
         // GET: Event/Details/5
@@ -58,6 +78,14 @@ namespace projekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CalendarId,Name,Description,Date")] Event @event)
         {
+            var row = await _context.Ownership
+                .Where(x => x.UserId.ToString().ToLower() == _userManager.GetUserId(User))
+                .FirstOrDefaultAsync();
+            if (row != null)
+            {
+                @event.CalendarId = row.CalendarId;
+            }
+            
             if (ModelState.IsValid)
             {
                 _context.Add(@event);
