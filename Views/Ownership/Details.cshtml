@@ -1,4 +1,4 @@
-@model projekt.Models.Ownership
+@model Ownership
 
 @{
     ViewData["Title"] = "Details";
@@ -8,18 +8,18 @@
 
 <div>
     <h4>Ownership</h4>
-    <hr />
+    <hr/>
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.UserId)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.UserId)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CalendarId)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CalendarId)
         </dd>
     </dl>

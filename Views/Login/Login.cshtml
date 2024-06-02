@@ -1,14 +1,12 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 
-@if (SignInManager.IsSignedIn(User))
-{
+@if (SignInManager.IsSignedIn(User)) {
     <form asp-controller="Login" asp-action="Logout" method="get">
         <button type="submit" class="btn btn-primary">Logout</button>
     </form>
 }
-else
-{
+else {
     <h1>Login</h1>
     <form asp-action="Login" method="post">
         <div class="form-group">

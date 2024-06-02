@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using projekt.Data;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddDbContext<DataBaseContext>(options =>
@@ -20,8 +19,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 );
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
 
-builder.Services.ConfigureApplicationCookie(options =>
-    {
+builder.Services.ConfigureApplicationCookie(options => {
         options.LoginPath = new PathString("/Login/Login");
         options.AccessDeniedPath = new PathString("/Shared/AccessDenied");
     }
@@ -35,8 +33,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
     app.UseSwagger();
@@ -52,8 +49,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
+    "default",
+    "{controller=Home}/{action=Index}/{id?}"
 );
 
 var scope = app.Services.CreateScope();
