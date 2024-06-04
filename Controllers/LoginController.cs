@@ -65,7 +65,7 @@ public class LoginController : Controller {
 
         if (addRoleResult.Succeeded) {
             var calendar = new Calendar {
-                Name = "Default",
+                Name = identityUser.UserName + "'s calendar",
                 Description = "Default calendar for user",
                 IsPublic = false
             };

@@ -11,7 +11,7 @@
     <div class="col-md-4">
         <form asp-action="SendCalendar">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="UserId"/>
+            <input type="hidden" asp-for="UserId" value=@ViewData["id"]/>
             <div class="form-group">
                 <label asp-for="CalendarId" class="control-label">Calendar</label>
                 <select asp-for="CalendarId" asp-items="ViewBag.Calendars" class="form-control"></select>

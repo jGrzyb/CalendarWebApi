@@ -161,58 +161,39 @@ public class EventController : Controller {
         return _context.Event.Any(e => e.Id == id);
     }
     
-    // public async Task<IActionResult> ShowUsers() {
-    //     var users = await _userManager.Users
-    //         .Select(u => new User { Id = Guid.Parse(u.Id), UserName = u.UserName ?? "NaN" })
-    //         .ToListAsync();
-    //     return View(users);
-    // }
-    //
-    // public async Task<IActionResult> SendCalendar(Guid? id) {
-    //     if (id == null) {
-    //         return NotFound();
-    //     }
-    //
-    //     ViewBag.Calendars = new SelectList(await _context.Ownership
-    //         .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
-    //         .Select(o => o.CalendarId)
-    //         .ToListAsync());
-    //     ViewBag.OwnerTypes = new SelectList(new List<bool> { false, true });
-    //     return View();
-    // }
-    // [HttpPost]
-    // [ValidateAntiForgeryToken]
-    // public async Task<IActionResult> SendCalendar([Bind("UserId,CalendarId,IsOwner")] Ownership @ownership) {
-    //     
-    //     Console.WriteLine("-----------------");
-    //     Console.WriteLine(@ownership.UserId);
-    //     Console.WriteLine(@ownership.CalendarId);
-    //     Console.WriteLine(@ownership.IsOwner);
-    //     Console.WriteLine("-----------------");
-    //
-    //     var list = await _context.Ownership
-    //         .Where(o => o.UserId.ToString().ToLower() == ownership.UserId.ToString().ToLower())
-    //         .Where(x => x.CalendarId == @ownership.CalendarId)
-    //         .ToListAsync();
-    //     if(!list.IsNullOrEmpty()) {
-    //         Console.WriteLine("----------------------Already have this calendar.");
-    //         return RedirectToAction(nameof(ShowUsers));
-    //     }
-    //     if (!ModelState.IsValid) {
-    //         foreach (var state in ModelState)
-    //         {
-    //             if (state.Value.Errors.Any())
-    //             {
-    //                 Console.WriteLine($"Key: {state.Key}, Errors: {string.Join(",", state.Value.Errors.Select(e => e.ErrorMessage))}");
-    //             }
-    //         }
-    //         Console.WriteLine("-----------------------Third if");
-    //         return RedirectToAction(nameof(ShowUsers));
-    //     }
-    //     
-    //     _context.Ownership.Add(@ownership);
-    //     await _context.SaveChangesAsync();
-    //     return RedirectToAction(nameof(ShowUsers));
-    //     
-    // }
+    public async Task<IActionResult> ShowUsers() {
+        var users = await _userManager.Users
+            .Select(u => new User { Id = Guid.Parse(u.Id), UserName = u.UserName ?? "NaN" })
+            .ToListAsync();
+        return View(users);
+    }
+    
+    public async Task<IActionResult> SendCalendar(Guid? id) {
+        if (id == null) {
+            return NotFound();
+        }
+        ViewBag.Calendars = new SelectList(await _context.Ownership
+            .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
+            .Select(o => o.CalendarId)
+            .ToListAsync());
+        ViewBag.OwnerTypes = new SelectList(new List<bool> { false, true });
+        ViewData["id"] = id;
+        return View();
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendCalendar([Bind("UserId,CalendarId,IsOwner")] Ownership @ownership) {
+        var list = await _context.Ownership
+            .Where(o => o.UserId.ToString().ToLower() == ownership.UserId.ToString().ToLower())
+            .Where(x => x.CalendarId == @ownership.CalendarId)
+            .ToListAsync();
+        if(!list.IsNullOrEmpty() || !ModelState.IsValid) {
+            return RedirectToAction(nameof(ShowUsers));
+        }
+        
+        _context.Ownership.Add(@ownership);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(ShowUsers));
+    }
 }
