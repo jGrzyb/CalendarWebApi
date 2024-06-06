@@ -28,21 +28,48 @@ public class EventController : Controller {
         if (user != null) {
             var roles = await _userManager.GetRolesAsync(user);
             if (roles.Contains("Admin")) {
-                return View(await _context.Event.ToListAsync());
+                var events1 = await _context.Event
+                    .Join(_context.Calendar,
+                        e => e.CalendarId,
+                        c => c.Id,
+                        (e, c) => new EventShow {
+                            Id = e.Id,
+                            CalendarId = e.CalendarId,
+                            CalendarName = c.Name,
+                            Name = e.Name,
+                            Description = e.Description,
+                            Date = e.Date,
+                            EndDate = e.EndDate
+                        })
+                    .ToListAsync();
+                return View(events1);
             }
         }
 
         // else if not admin
         var str = _userManager.GetUserId(User);
         Console.WriteLine(str);
-        var events = await _context.Ownership
+        var events2 = await _context.Ownership
             .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
-            .Join(_context.Event,
+            .Join(_context.Calendar,
                 o => o.CalendarId,
+                c => c.Id,
+                (o, c) => new {Ownership = o, Calendar = c})
+            .Join(_context.Event,
+                o => o.Ownership.CalendarId,
                 e => e.CalendarId,
-                (o, e) => e)
+                (o, e) => new EventShow {
+                    Id = e.Id,
+                    CalendarId = e.CalendarId,
+                    CalendarName = o.Calendar.Name,
+                    Name = e.Name,
+                    Description = e.Description,
+                    Date = e.Date,
+                    EndDate = e.EndDate,
+                    IsOwner = o.Ownership.IsOwner
+                })
             .ToListAsync();
-        return View(events);
+        return View(events2);
     }
 
     // GET: Event/Details/5
@@ -64,8 +91,13 @@ public class EventController : Controller {
     public async Task<IActionResult> Create() {
         var yourCalendars = await _context.Ownership
             .Where(x => x.UserId.ToString().ToLower() == _userManager.GetUserId(User))
+            .Join(_context.Calendar,
+                o => o.CalendarId,
+                c => c.Id,
+                (o, c) => new { CalendarId = c.Id, CalendarName = c.Name
+                })
             .ToListAsync();
-        ViewBag.Calendars = new SelectList(yourCalendars.Select(x => x.CalendarId).ToList());
+        ViewBag.Calendars = new SelectList(yourCalendars, "CalendarId", "CalendarName");
         ViewData["Error"] = "You do not own any calendar.";
         return View();
     }
@@ -75,7 +107,7 @@ public class EventController : Controller {
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,CalendarId,Name,Description,Date")] Event @event) {
+    public async Task<IActionResult> Create([Bind("Id,CalendarId,Name,Description,Date,EndDate")] Event @event) {
         if (ModelState.IsValid) {
             _context.Add(@event);
             await _context.SaveChangesAsync();
@@ -90,7 +122,15 @@ public class EventController : Controller {
         if (id == null) {
             return NotFound();
         }
-
+        var yourCalendars = await _context.Ownership
+            .Where(x => x.UserId.ToString().ToLower() == _userManager.GetUserId(User))
+            .Join(_context.Calendar,
+                o => o.CalendarId,
+                c => c.Id,
+                (o, c) => new { CalendarId = c.Id, CalendarName = c.Name
+                })
+            .ToListAsync();
+        ViewBag.Calendars = new SelectList(yourCalendars, "CalendarId", "CalendarName");
         var @event = await _context.Event.FindAsync(id);
         if (@event == null) {
             return NotFound();

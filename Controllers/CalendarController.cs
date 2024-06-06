@@ -21,11 +21,16 @@ public class CalendarController : Controller {
     public async Task<IActionResult> Index() {
         var calendars = await _context.Ownership
             .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
-            .Where(o => o.IsOwner == true)
             .Join(_context.Calendar,
                 o => o.CalendarId,
                 c => c.Id,
-                (o, c) => c)
+                (o, c) => new CalendarShow {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    IsPublic = c.IsPublic,
+                    IsOwner = o.IsOwner
+                })
             .ToListAsync();
         return View(calendars);
     }
