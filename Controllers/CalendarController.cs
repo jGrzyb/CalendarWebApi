@@ -24,7 +24,13 @@ public class CalendarController : Controller {
             .Join(_context.Calendar,
                 o => o.CalendarId,
                 c => c.Id,
-                (o, c) => c)
+                (o, c) => new CalendarShow {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    IsPublic = c.IsPublic,
+                    IsOwner = o.IsOwner
+                })
             .ToListAsync();
         return View(calendars);
     }

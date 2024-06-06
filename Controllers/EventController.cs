@@ -51,21 +51,22 @@ public class EventController : Controller {
         Console.WriteLine(str);
         var events2 = await _context.Ownership
             .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
-            .Join(_context.Event,
-                o => o.CalendarId,
-                e => e.CalendarId,
-                (o, e) => e)
             .Join(_context.Calendar,
-                e => e.CalendarId,
+                o => o.CalendarId,
                 c => c.Id,
-                (e, c) => new EventShow {
+                (o, c) => new {Ownership = o, Calendar = c})
+            .Join(_context.Event,
+                o => o.Ownership.CalendarId,
+                e => e.CalendarId,
+                (o, e) => new EventShow {
                     Id = e.Id,
                     CalendarId = e.CalendarId,
-                    CalendarName = c.Name,
+                    CalendarName = o.Calendar.Name,
                     Name = e.Name,
                     Description = e.Description,
                     Date = e.Date,
-                    EndDate = e.EndDate
+                    EndDate = e.EndDate,
+                    IsOwner = o.Ownership.IsOwner
                 })
             .ToListAsync();
         return View(events2);
@@ -93,9 +94,7 @@ public class EventController : Controller {
             .Join(_context.Calendar,
                 o => o.CalendarId,
                 c => c.Id,
-                (o, c) => new {
-                    CalendarId = c.Id,
-                    CalendarName = c.Name
+                (o, c) => new { CalendarId = c.Id, CalendarName = c.Name
                 })
             .ToListAsync();
         ViewBag.Calendars = new SelectList(yourCalendars, "CalendarId", "CalendarName");
@@ -123,7 +122,15 @@ public class EventController : Controller {
         if (id == null) {
             return NotFound();
         }
-
+        var yourCalendars = await _context.Ownership
+            .Where(x => x.UserId.ToString().ToLower() == _userManager.GetUserId(User))
+            .Join(_context.Calendar,
+                o => o.CalendarId,
+                c => c.Id,
+                (o, c) => new { CalendarId = c.Id, CalendarName = c.Name
+                })
+            .ToListAsync();
+        ViewBag.Calendars = new SelectList(yourCalendars, "CalendarId", "CalendarName");
         var @event = await _context.Event.FindAsync(id);
         if (@event == null) {
             return NotFound();

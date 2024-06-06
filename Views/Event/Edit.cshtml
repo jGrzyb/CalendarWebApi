@@ -15,7 +15,7 @@
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="CalendarId" class="control-label"></label>
-                <input asp-for="CalendarId" class="form-control" />
+                <select asp-for="CalendarId" asp-items="ViewBag.Calendars" class="form-control"></select>
                 <span asp-validation-for="CalendarId" class="text-danger"></span>
             </div>
             <div class="form-group">
