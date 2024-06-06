@@ -184,6 +184,9 @@ public class EventController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendCalendar([Bind("UserId,CalendarId,IsOwner")] Ownership @ownership) {
+        if(ownership.UserId == Guid.Empty || ownership.CalendarId == 0) {
+            return RedirectToAction(nameof(ShowUsers));
+        }
         var list = await _context.Ownership
             .Where(o => o.UserId.ToString().ToLower() == ownership.UserId.ToString().ToLower())
             .Where(x => x.CalendarId == @ownership.CalendarId)
