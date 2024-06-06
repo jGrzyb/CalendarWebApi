@@ -1,24 +1,17 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.IdentityModel.Tokens;
-using SQLitePCL;
+using projekt.Data;
+using projekt.Models;
 
-namespace projekt.Controllers {
-    [Route("login")]
-    public class LoginController : Controller {
-        private readonly DataBaseContext _context;
-        private readonly IConfiguration _configuration;
+namespace projekt.Controllers;
 
-        public LoginController(IConfiguration configuration, DataBaseContext context) {
-            _context = context;
-            _configuration = configuration;
-        }
+public class LoginController : Controller {
+    private readonly IConfiguration _configuration;
+    private readonly DataBaseContext _context;
+    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<IdentityUser> _userManager;
 
+<<<<<<< HEAD
         [HttpGet]
         public IActionResult Login() {
             return View();
@@ -51,5 +44,108 @@ namespace projekt.Controllers {
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+=======
+    public LoginController(IConfiguration configuration, DataBaseContext context, UserManager<IdentityUser> userManager,
+        SignInManager<IdentityUser> signInManager) {
+        _context = context;
+        _configuration = configuration;
+        _userManager = userManager;
+        _signInManager = signInManager;
+>>>>>>> 68eab030bf0950d703bf381c45e9b58d0165cd28
     }
+
+    [HttpGet]
+    [ActionName("Login")]
+    public IActionResult Login() {
+        return View();
+    }
+
+    [HttpPost]
+    [ActionName("Login")]
+    public async Task<IActionResult> Login(string username, string password) {
+        var signInResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
+
+        if (!signInResult.Succeeded) {
+            return View();
+        }
+
+        ViewData["Error"] = "Wrong username or password.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet]
+    [ActionName("Register")]
+    public IActionResult Register() {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ActionName("Register")]
+    public async Task<IActionResult> Register(string username, string email, string password) {
+        Console.WriteLine(username + " " + email + " " + password);
+        var identityUser = new IdentityUser {
+            UserName = username,
+            Email = email
+        };
+
+        var registerResult = await _userManager.CreateAsync(identityUser, password);
+
+        if (!registerResult.Succeeded) {
+            ViewData["Error"] = registerResult.Errors.FirstOrDefault()?.Description;
+            return View();
+        }
+
+        var addRoleResult = await _userManager.AddToRoleAsync(identityUser, "User");
+
+        if (addRoleResult.Succeeded) {
+            var calendar = new Calendar {
+                Name = identityUser.UserName + "'s calendar",
+                Description = "Default calendar for user",
+                IsPublic = false
+            };
+            _context.Calendar.Add(calendar);
+            await _context.SaveChangesAsync();
+            
+            await _context.Ownership.AddAsync(new Ownership {
+                UserId = Guid.Parse(identityUser.Id),
+                CalendarId = calendar.Id,
+                IsOwner = true
+            });
+            await _context.SaveChangesAsync();
+            
+            return RedirectToAction("Login");
+        }
+
+        //error
+        ViewData["Error"] = registerResult.Errors.FirstOrDefault()?.Description;
+        return View();
+    }
+
+    [HttpGet]
+    [ActionName("Logout")]
+    public async Task<IActionResult> Logout() {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+
+
+    // private string GenerateJwtToken(string username)
+    // {
+    //     var tokenHandler = new JwtSecurityTokenHandler();
+    //     var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
+    //     var tokenDescriptor = new SecurityTokenDescriptor
+    //     {
+    //         Subject = new ClaimsIdentity([
+    //                 new Claim(ClaimTypes.Name, username)
+    //             ]
+    //         ),
+    //         Expires = DateTime.UtcNow.AddMinutes(0.5),
+    //         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+    //         Issuer = _configuration["Jwt:Issuer"],
+    //         Audience = _configuration["Jwt:Audience"]
+    //     };
+    //     var token = tokenHandler.CreateToken(tokenDescriptor);
+    //     return tokenHandler.WriteToken(token);
+    // }
 }

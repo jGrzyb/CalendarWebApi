@@ -1,162 +1,218 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Data;
+using Microsoft.IdentityModel.Tokens;
+using projekt.Data;
+using projekt.Models;
 
-namespace projekt.Controllers
-{
-    public class EventController : Controller
-    {
-        private readonly DataBaseContext _context;
+namespace projekt.Controllers;
 
-        public EventController(DataBaseContext context)
-        {
-            _context = context;
+[Authorize]
+public class EventController : Controller {
+    private readonly DataBaseContext _context;
+    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public EventController(DataBaseContext context, UserManager<IdentityUser> userManager,
+        SignInManager<IdentityUser> signInManager) {
+        _context = context;
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
+
+    // GET: Event
+    public async Task<IActionResult> Index() {
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null) {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Admin")) {
+                return View(await _context.Event.ToListAsync());
+            }
         }
 
+<<<<<<< HEAD
         // GET: Event
         public async Task<IActionResult> Index()
         {
             return _context.Event != null ? 
                         View(await _context.Event.ToListAsync()) :
                         Problem("Entity set 'DataBaseContext.Event'  is null.");
+=======
+        // else if not admin
+        var str = _userManager.GetUserId(User);
+        Console.WriteLine(str);
+        var events = await _context.Ownership
+            .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
+            .Join(_context.Event,
+                o => o.CalendarId,
+                e => e.CalendarId,
+                (o, e) => e)
+            .ToListAsync();
+        return View(events);
+    }
+
+    // GET: Event/Details/5
+    public async Task<IActionResult> Details(int? id) {
+        if (id == null) {
+            return NotFound();
+>>>>>>> 68eab030bf0950d703bf381c45e9b58d0165cd28
         }
 
-        // GET: Event/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Event == null)
-            {
-                return NotFound();
-            }
-
-            var @event = await _context.Event
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            return View(@event);
+        var @event = await _context.Event
+            .FirstOrDefaultAsync(m => m.Id == id);
+        if (@event == null) {
+            return NotFound();
         }
 
-        // GET: Event/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        return View(@event);
+    }
 
-        // POST: Event/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,Name,Description,Date")] Event @event)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(@event);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(@event);
-        }
+    // GET: Event/Create
+    public async Task<IActionResult> Create() {
+        var yourCalendars = await _context.Ownership
+            .Where(x => x.UserId.ToString().ToLower() == _userManager.GetUserId(User))
+            .ToListAsync();
+        ViewBag.Calendars = new SelectList(yourCalendars.Select(x => x.CalendarId).ToList());
+        ViewData["Error"] = "You do not own any calendar.";
+        return View();
+    }
 
-        // GET: Event/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Event == null)
-            {
-                return NotFound();
-            }
-
-            var @event = await _context.Event.FindAsync(id);
-            if (@event == null)
-            {
-                return NotFound();
-            }
-            return View(@event);
-        }
-
-        // POST: Event/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Name,Description,Date")] Event @event)
-        {
-            if (id != @event.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(@event);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventExists(@event.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(@event);
-        }
-
-        // GET: Event/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Event == null)
-            {
-                return NotFound();
-            }
-
-            var @event = await _context.Event
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            return View(@event);
-        }
-
-        // POST: Event/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Event == null)
-            {
-                return Problem("Entity set 'DataBaseContext.Event'  is null.");
-            }
-            var @event = await _context.Event.FindAsync(id);
-            if (@event != null)
-            {
-                _context.Event.Remove(@event);
-            }
-            
+    // POST: Event/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([Bind("Id,CalendarId,Name,Description,Date")] Event @event) {
+        if (ModelState.IsValid) {
+            _context.Add(@event);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+<<<<<<< HEAD
         private bool EventExists(int id)
         {
             return (_context.Event?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+=======
+        return View(@event);
+>>>>>>> 68eab030bf0950d703bf381c45e9b58d0165cd28
+    }
+
+    // GET: Event/Edit/5
+    public async Task<IActionResult> Edit(int? id) {
+        if (id == null) {
+            return NotFound();
+        }
+
+        var @event = await _context.Event.FindAsync(id);
+        if (@event == null) {
+            return NotFound();
+        }
+
+        return View(@event);
+    }
+
+    // POST: Event/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, [Bind("Id,CalendarId,Name,Description,Date")] Event @event) {
+        if (id != @event.Id) {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid) {
+            try {
+                _context.Update(@event);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) {
+                if (!EventExists(@event.Id)) {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View(@event);
+    }
+
+    // GET: Event/Delete/5
+    public async Task<IActionResult> Delete(int? id) {
+        if (id == null) {
+            return NotFound();
+        }
+
+        var @event = await _context.Event
+            .FirstOrDefaultAsync(m => m.Id == id);
+        if (@event == null) {
+            return NotFound();
+        }
+
+        return View(@event);
+    }
+
+    // POST: Event/Delete/5
+    [HttpPost]
+    [ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id) {
+        var @event = await _context.Event.FindAsync(id);
+        if (@event != null) {
+            _context.Event.Remove(@event);
+        }
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    private bool EventExists(int id) {
+        return _context.Event.Any(e => e.Id == id);
+    }
+    
+    public async Task<IActionResult> ShowUsers() {
+        var users = await _userManager.Users
+            .Select(u => new User { Id = Guid.Parse(u.Id), UserName = u.UserName ?? "NaN" })
+            .ToListAsync();
+        return View(users);
+    }
+    
+    public async Task<IActionResult> SendCalendar(Guid? id) {
+        if (id == null) {
+            return NotFound();
+        }
+        ViewBag.Calendars = new SelectList(await _context.Ownership
+            .Where(o => o.UserId.ToString().ToLower() == (_userManager.GetUserId(User) ?? "").ToLower())
+            .Select(o => o.CalendarId)
+            .ToListAsync());
+        ViewBag.OwnerTypes = new SelectList(new List<bool> { false, true });
+        ViewData["id"] = id;
+        return View();
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendCalendar([Bind("UserId,CalendarId,IsOwner")] Ownership @ownership) {
+        if(ownership.UserId == Guid.Empty || ownership.CalendarId == 0) {
+            return RedirectToAction(nameof(ShowUsers));
+        }
+        var list = await _context.Ownership
+            .Where(o => o.UserId.ToString().ToLower() == ownership.UserId.ToString().ToLower())
+            .Where(x => x.CalendarId == @ownership.CalendarId)
+            .ToListAsync();
+        if(!list.IsNullOrEmpty() || !ModelState.IsValid) {
+            return RedirectToAction(nameof(ShowUsers));
+        }
+        
+        _context.Ownership.Add(@ownership);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(ShowUsers));
     }
 }
