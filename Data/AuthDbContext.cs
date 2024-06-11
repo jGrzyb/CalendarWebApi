@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using projekt.Models;
 
 namespace projekt.Data;
 
@@ -58,4 +59,6 @@ public class AuthDbContext : IdentityDbContext {
 
         builder.Entity<IdentityUserRole<string>>().HasData(adminRoles);
     }
+
+public DbSet<projekt.Models.User> User { get; set; } = default!;
 }
